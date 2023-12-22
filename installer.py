@@ -3,17 +3,19 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description='Arch Linux Install Tool', epilog='This Arch Installer has Super Cow powers')
-parser.add_argument('--lang', '-l', type=str, help='Set the system language')
-parser.add_argument('--keyboard', '-kbd', type=str, help='Set the keyboard')
-parser.add_argument('--disk', '-dsk', type=str, help='Select the disk you want to install the system to (IT WILL WIPE THE DRIVE)')
-parser.add_argument('--user', '-u', type=str, help='Set the username for your user')
-parser.add_argument('--password', '-p', type=str, help='Set the password for your user')
-parser.add_argument('--desktop', '-de', type=str, help='Set the desktop environment to install')
+parser.add_argument('--lang', '-l', type=str, required=True, help='Set the system language')
+parser.add_argument('--keyboard', '-kbd', type=str, required=True, help='Set the keyboard')
+parser.add_argument('--disk', '-dsk', type=str, required=True, help='Select the disk you want to install the system to (IT WILL WIPE THE DRIVE)')
+parser.add_argument('--user', '-u', type=str, required=True, help='Set the username for your user')
+parser.add_argument('--password', '-p', type=str, required=True, help='Set the password for your user')
+parser.add_argument('--desktop', '-de', type=str, help='Set the desktop environment to install\nHere is a list of the available desktop environment in this script\nKDE\nGNOME\nHyprland\nXFCE\nCinnamon\nLXQT\nDeepin\nBudgie\nCosmic\n')
 
 
 args = parser.parse_args()
 
 country = 'test'
+username = args.user.lower()
+keymap = ''
 
 
 os.system('timedatectl')
@@ -88,12 +90,37 @@ if args.desktop:
 
 os.system('genfstab -U /mnt >> /mnt/etc/fstab')
 
+
 # Time
+
+os.system('arch-chroot /mnt ln -sf /usr/share/zoneinfo/{keymap} /mnt/etc/localtime')
+os.system('arch-chroot /mnt hwclock --systohc')
 
 # Locale gen
 
+os.system(f'arch-chroot /mnt sed -i "s/#{lang}.UTF-8 UTF-8/{lang}.UTF-8 UTF-8/" /etc/locale.gen')
+os.system('arch-chroot /mnt locale-gen')
+os.system(f'echo "LANG={args.lang}.UTF-8" > /mnt/etc/locale.conf')
+os.system(f'echo "KEYMAP={keymap}" > /mnt/etc/vconsole.conf')
+
+# Network configuration
+
+os.system('echo "archlinux" > /mnt/etc/hostname')
+
 # Initramfs
+
+os.system('arch-chroot /mnt mkinitcpio -P')
 
 # Add user
 
-# 
+os.system(f'arch-chroot /mnt useradd -m -G wheel {username}')
+os.system(f'arch-chroot /mnt passwd {username} <<< "{args.password}\n{args.password}\n"')
+
+# Lock root account
+
+os.system('arch-chroot /mnt passwd -l root')
+
+# Bootloader (systemd-boot)
+
+os.system('arch-chroot /mnt bootctl install')
+os.system('arch-chroot /mnt systemctl enable systemd-boot-update')
