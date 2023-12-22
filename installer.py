@@ -86,6 +86,8 @@ if args.desktop:
 
 # Gen fs tab
 
+os.system('genfstab -U /mnt >> /mnt/etc/fstab')
+
 # Time
 
 # Locale gen
