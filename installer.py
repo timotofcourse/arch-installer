@@ -98,7 +98,7 @@ os.system('arch-chroot /mnt hwclock --systohc')
 
 # Locale gen
 
-os.system(f'arch-chroot /mnt sed -i "s/#{lang}.UTF-8 UTF-8/{lang}.UTF-8 UTF-8/" /etc/locale.gen')
+os.system(f'arch-chroot /mnt sed -i "s/#{args.lang}.UTF-8 UTF-8/{args.lang}.UTF-8 UTF-8/" /etc/locale.gen')
 os.system('arch-chroot /mnt locale-gen')
 os.system(f'echo "LANG={args.lang}.UTF-8" > /mnt/etc/locale.conf')
 os.system(f'echo "KEYMAP={keymap}" > /mnt/etc/vconsole.conf')
@@ -124,6 +124,7 @@ def install_yay():
     os.system(f'arch-chroot /mnt sudo -u yayuser git clone https://aur.archlinux.org/yay.git /home/yayuser/yay')
     os.system(f'arch-chroot /mnt sudo -u yayuser bash -c "cd /home/yayuser/yay && updpkgsums && makepkg -si --noconfirm"')
     os.system(f'arch-chroot /mnt rm -rf /home/yayuser/yay')
+    os.system('arch-chroot /mnt userdel -r yayuser')
 
 install_yay()
 
