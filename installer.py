@@ -120,10 +120,10 @@ os.system(f'arch-chroot /mnt passwd {username} <<< "{args.password}\n{args.passw
 
 def install_yay():
     
-    os.system(f'arch-chroot /mnt useradd -m -G wheel yayuser')
-    os.system(f'arch-chroot /mnt sudo -u yayuser git clone https://aur.archlinux.org/yay.git /home/yayuser/yay')
-    os.system(f'arch-chroot /mnt sudo -u yayuser bash -c "cd /home/yayuser/yay && updpkgsums && makepkg -si --noconfirm"')
-    os.system(f'arch-chroot /mnt rm -rf /home/yayuser/yay')
+    os.system('arch-chroot /mnt useradd -m -G wheel yayuser')
+    os.system('arch-chroot /mnt sudo -u yayuser git clone https://aur.archlinux.org/yay.git /home/yayuser/yay')
+    os.system('arch-chroot /mnt sudo -u yayuser bash -c "cd /home/yayuser/yay && updpkgsums && makepkg -si --noconfirm"')
+    os.system('arch-chroot /mnt rm -rf /home/yayuser/yay')
     os.system('arch-chroot /mnt userdel -r yayuser')
 
 install_yay()
