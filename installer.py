@@ -116,11 +116,22 @@ os.system('arch-chroot /mnt mkinitcpio -P')
 os.system(f'arch-chroot /mnt useradd -m -G wheel {username}')
 os.system(f'arch-chroot /mnt passwd {username} <<< "{args.password}\n{args.password}\n"')
 
-# Lock root account
+# AUR Packages
 
-os.system('arch-chroot /mnt passwd -l root')
+def install_yay():
+    
+    os.system(f'arch-chroot /mnt useradd -m -G wheel yayuser')
+    os.system(f'arch-chroot /mnt sudo -u yayuser git clone https://aur.archlinux.org/yay.git /home/yayuser/yay')
+    os.system(f'arch-chroot /mnt sudo -u yayuser bash -c "cd /home/yayuser/yay && updpkgsums && makepkg -si --noconfirm"')
+    os.system(f'arch-chroot /mnt rm -rf /home/yayuser/yay')
+
+install_yay()
 
 # Bootloader (systemd-boot)
 
 os.system('arch-chroot /mnt bootctl install')
 os.system('arch-chroot /mnt systemctl enable systemd-boot-update')
+
+# Lock root account
+
+os.system('arch-chroot /mnt passwd -l root')
