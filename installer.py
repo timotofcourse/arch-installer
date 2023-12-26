@@ -118,15 +118,15 @@ os.system(f'arch-chroot /mnt passwd {username} <<< "{args.password}\n{args.passw
 
 # AUR Packages
 
-def install_yay():
-    
-    os.system('arch-chroot /mnt useradd -m -G wheel yayuser')
-    os.system('arch-chroot /mnt sudo -u yayuser git clone https://aur.archlinux.org/yay.git /home/yayuser/yay')
-    os.system('arch-chroot /mnt sudo -u yayuser bash -c "cd /home/yayuser/yay && updpkgsums && makepkg -si --noconfirm"')
-    os.system('arch-chroot /mnt rm -rf /home/yayuser/yay')
-    os.system('arch-chroot /mnt userdel -r yayuser')
-
-install_yay()
+github_username = 'timotofcourse'
+github_repo = 'arch-repo'
+repo_name = 'arch-rep'
+repo_url = f'https://raw.githubusercontent.com/{github_username}/{github_repo}/main'
+sig_level = 'Optional TrustAll'
+repo_info = f'[{repo_name}]\nServer = {repo_url}\nSigLevel = {sig_level}'
+command_line = f'arch-chroot /mnt sh -c "echo \"{repo_info}\" >> /etc/pacman.conf"'
+os.system(command_line)
+os.system('arch-chroot /mnt pacman -Sy yay joma')
 
 # Bootloader (systemd-boot)
 
